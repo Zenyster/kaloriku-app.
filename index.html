@@ -103,24 +103,14 @@
     }
 
     .nav-item svg {
-      width: 18px;
-      height: 18px;
-      stroke: #64748b;
-      stroke-width: 2;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      transition: stroke 0.2s;
+      width: 18px; height: 18px; stroke: #64748b; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;
     }
 
     .nav-item:active, .nav-item.active {
-      background-color: #ecfdf5;
-      color: var(--primary-dark);
+      background-color: #ecfdf5; color: var(--primary-dark);
     }
 
-    .nav-item.active svg {
-      stroke: var(--primary-dark);
-    }
+    .nav-item.active svg { stroke: var(--primary-dark); }
 
     /* CARD STYLING */
     .card { 
@@ -141,6 +131,25 @@
       margin-bottom: 15px;
     }
 
+    .daily-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .btn-reset-daily {
+      background: #fee2e2;
+      color: #991b1b;
+      border: none;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
     .progress-bar-bg {
       background: #e2e8f0;
       height: 10px;
@@ -155,7 +164,24 @@
       width: 0%;
       transition: width 0.3s ease, background-color 0.3s ease;
     }
-    
+
+    .undo-container {
+      margin-top: 6px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-undo {
+      background: none;
+      border: none;
+      color: #0284c7;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+    }
+
     .mode-container {
       display: flex;
       gap: 4px;
@@ -199,6 +225,38 @@
 
     textarea { height: 80px; resize: none; }
 
+    /* AUTOCOMPLETE SUGGESTION BOX */
+    .input-wrapper { position: relative; }
+    .suggestion-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      max-height: 180px;
+      overflow-y: auto;
+      z-index: 50;
+      display: none;
+      margin-top: 4px;
+    }
+    .suggestion-item {
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--dark-text);
+      cursor: pointer;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+    }
+    .suggestion-item:hover, .suggestion-item:active {
+      background: #ecfdf5;
+      color: var(--primary-dark);
+    }
+
     .btn-hitung { 
       width: 100%; background-color: var(--primary); color: #ffffff; font-weight: 700; border: none; margin-top: 15px; font-size: 15px; border-radius: 12px; cursor: pointer; padding: 13px; text-align: center;
       box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
@@ -240,7 +298,7 @@
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-<!-- SIDEBAR NAVIGATION DENGAN IKON ELEGAN (SVG) -->
+<!-- SIDEBAR NAVIGATION -->
 <div class="sidebar" id="sidebar">
   <div class="sidebar-header">FITKALORIKU</div>
   <ul class="nav-menu">
@@ -271,12 +329,18 @@
   
   <!-- BAR PROGRES HARIAN -->
   <div class="daily-bar-container">
-    <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;">
+    <div class="daily-header-flex">
       <span>Total Hari Ini:</span>
-      <span id="dailyTotalText">0 / 1500 kcal</span>
+      <div>
+        <span id="dailyTotalText">0 / 1500 kcal</span>
+        <button type="button" class="btn-reset-daily" onclick="resetTotalHarian()" title="Reset Total Hari Ini">Reset Hari Ini</button>
+      </div>
     </div>
     <div class="progress-bar-bg">
       <div class="progress-bar-fill" id="dailyBarFill"></div>
+    </div>
+    <div id="undoArea" class="undo-container" style="display: none;">
+      <button type="button" class="btn-undo" onclick="undoLastEntry()">↩️ Batalkan Sesi Terakhir (<span id="lastEntryText">0</span> kcal)</button>
     </div>
     <div id="dailyWarningText" style="font-size: 11px; color: #dc2626; font-weight: 700; margin-top: 5px; display: none;">
       ⚠️ Perhatian: Total akumulasi harianmu sudah melebihi batas target harian!
@@ -301,7 +365,10 @@
     </select>
 
     <label for="menuInput">Habis makan apa aja?:</label>
-    <textarea id="menuInput" placeholder="Contoh: Telur gulung 5, es teh, mie gacoan"></textarea>
+    <div class="input-wrapper">
+      <textarea id="menuInput" placeholder="Contoh: Telur gulung 5, es teh, mie gacoan" oninput="showSuggestions()"></textarea>
+      <div id="suggestionBox" class="suggestion-dropdown"></div>
+    </div>
     <div id="errorText" class="error-msg">Masukkan makanan/minuman yang valid. Kata acak atau benda mati tidak dapat dihitung.</div>
 
     <button type="button" class="btn-hitung" onclick="prosesHitung()">Total Kalorimu</button>
@@ -363,12 +430,13 @@
 <script>
   var currentMode = 'defisit';
   var lastCalculatedCal = 0;
+  var lastAddedCal = 0;
 
   var foodDatabase = [
     // --- SPECIAL GACOAN MENU ---
     { keywords: ['mie suit', 'gacoan suit', 'mie gacoan suit'], name: 'Mie Suit Gacoan', cal: 450, unit: 'porsi' },
     { keywords: ['mie hompimpa', 'gacoan hompimpa'], name: 'Mie Hompimpa Gacoan', cal: 520, unit: 'porsi' },
-    { keywords: ['mie gacoan', 'gacoan pedas', 'mie iblis', 'mie setan'], name: 'Mie Gacoan', cal: 560, unit: 'porsi', sug: "Mie gacoan goreng manis pedas mengandung minyak & toping lumayan tinggi. Batasi jika sedang defisit ketat." },
+    { keywords: ['mie gacoan', 'gacoan pedas', 'mie iblis', 'mie setan', 'gacoan'], name: 'Mie Gacoan', cal: 560, unit: 'porsi', sug: "Mie gacoan goreng manis pedas mengandung minyak & toping lumayan tinggi. Batasi jika sedang defisit ketat." },
     { keywords: ['udang keju', 'dimsum udang keju'], name: 'Udang Keju Gacoan', cal: 80, unit: 'biji' },
     { keywords: ['udang rambutan', 'dimsum udang rambutan'], name: 'Udang Rambutan Gacoan', cal: 85, unit: 'biji' },
     { keywords: ['pangsit goreng gacoan', 'pangsit gacoan'], name: 'Pangsit Goreng Gacoan', cal: 90, unit: 'biji' },
@@ -530,6 +598,53 @@
     { keywords: ['jus alpukat', 'es buah', 'es teler', 'sop buah'], name: 'Jus Alpukat / Es Buah', cal: 300, unit: 'mangkuk' }
   ];
 
+  // LOGIKA AUTOCOMPLETE RECOMMENDATION
+  function showSuggestions() {
+    var val = document.getElementById('menuInput').value.toLowerCase();
+    var box = document.getElementById('suggestionBox');
+    
+    // Ambil kata terakhir setelah koma
+    var terms = val.split(/,|\n/);
+    var currentTerm = terms[terms.length - 1].trim();
+
+    if (currentTerm.length < 2) {
+      box.style.display = 'none';
+      return;
+    }
+
+    var matches = [];
+    foodDatabase.forEach(function(food) {
+      food.keywords.forEach(function(kw) {
+        if (kw.indexOf(currentTerm) !== -1 && !matches.includes(food.name)) {
+          matches.push({ name: food.name, cal: food.cal });
+        }
+      });
+    });
+
+    if (matches.length > 0) {
+      box.innerHTML = '';
+      matches.slice(0, 5).forEach(function(item) {
+        var div = document.createElement('div');
+        div.className = 'suggestion-item';
+        div.innerHTML = '<span>' + item.name + '</span><span style="color:#64748b; font-weight:normal;">' + item.cal + ' kcal</span>';
+        div.onclick = function() { selectSuggestion(item.name); };
+        box.appendChild(div);
+      });
+      box.style.display = 'block';
+    } else {
+      box.style.display = 'none';
+    }
+  }
+
+  function selectSuggestion(selectedName) {
+    var input = document.getElementById('menuInput');
+    var terms = input.value.split(/,|\n/);
+    terms[terms.length - 1] = " " + selectedName;
+    input.value = terms.join(', ') + ", ";
+    document.getElementById('suggestionBox').style.display = 'none';
+    input.focus();
+  }
+
   function getDailyLimit(mode) {
     if (mode === 'defisit') return 1500;
     if (mode === 'surplus') return 2200;
@@ -604,8 +719,37 @@
     var newTotal = currentDailyTotal + lastCalculatedCal;
     
     localStorage.setItem(todayKey, newTotal);
+    lastAddedCal = lastCalculatedCal;
+
+    document.getElementById('lastEntryText').innerText = lastAddedCal;
+    document.getElementById('undoArea').style.display = "flex";
+
     updateDailyUI();
     alert("Berhasil ditambahkan " + lastCalculatedCal + " kcal ke total hari ini!");
+  }
+
+  function undoLastEntry() {
+    if (lastAddedCal <= 0) return;
+    var todayKey = getTodayKey();
+    var currentDailyTotal = parseInt(localStorage.getItem(todayKey) || "0");
+    var newTotal = Math.max(0, currentDailyTotal - lastAddedCal);
+
+    localStorage.setItem(todayKey, newTotal);
+    alert("Berhasil membatalkan " + lastAddedCal + " kcal!");
+    
+    lastAddedCal = 0;
+    document.getElementById('undoArea').style.display = "none";
+    updateDailyUI();
+  }
+
+  function resetTotalHarian() {
+    if (confirm("Apakah kamu yakin ingin mengosongkan total kalori hari ini kembali ke 0?")) {
+      var todayKey = getTodayKey();
+      localStorage.setItem(todayKey, 0);
+      lastAddedCal = 0;
+      document.getElementById('undoArea').style.display = "none";
+      updateDailyUI();
+    }
   }
 
   function renderHistory() {
@@ -671,10 +815,12 @@
     document.getElementById('menuInput').value = "";
     document.getElementById('errorText').style.display = "none";
     document.getElementById('resultBox').style.display = "none";
+    document.getElementById('suggestionBox').style.display = "none";
     lastCalculatedCal = 0;
   }
 
   function prosesHitung() {
+    document.getElementById('suggestionBox').style.display = "none";
     var textInput = document.getElementById('menuInput').value;
     var session = document.getElementById('session').value;
     var errorText = document.getElementById('errorText');
@@ -789,6 +935,13 @@
 
     resultBox.style.display = "block";
   }
+
+  // Tutup dropdown saat klik di luar
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.input-wrapper')) {
+      document.getElementById('suggestionBox').style.display = 'none';
+    }
+  });
 
   checkAndResetDaily();
 </script>
