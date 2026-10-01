@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KALORI.KU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+--primary: #10b981;
+--primary-dark: #059669;
+--dark-text: #1e293b;
+--bg-light: #f0fdf4;
+--card-bg: #ffffff;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+background-color: var(--bg-light);
+padding: 24px 15px;
+margin: 0;
+color: var(--dark-text);
+}
+
+.card {
+background: var(--card-bg);
+padding: 24px 20px;
+border-radius: 20px;
+box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.12);
+max-width: 480px;
+margin: 0 auto;
+border: 1px solid #d1fae5;
+}
+
+h1 {
+font-family: 'Poppins', sans-serif;
+font-size: 26px;
+font-weight: 800;
+text-align: center;
+margin: 0 0 20px 0;
+color: var(--primary);
+letter-spacing: 1px;
+}
+
+.mode-container {
+display: flex;
+gap: 6px;
+margin-bottom: 18px;
+background: #f1f5f9;
+padding: 4px;
+border-radius: 12px;
+}
+
+.mode-btn {
+flex: 1;
+padding: 10px 4px;
+font-family: 'Poppins', sans-serif;
+font-size: 11px;
+font-weight: 600;
+border: none;
+border-radius: 9px;
+background: transparent;
+color: #64748b;
+cursor: pointer;
+transition: all 0.2s ease;
+}
+
+.mode-btn.active {
+background-color: var(--primary) !important;
+color: #ffffff !important;
+font-weight: 700;
+box-shadow: 0 3px 6px rgba(16, 185, 129, 0.25);
+}
+
+label {
+font-family: 'Poppins', sans-serif;
+font-weight: 600;
+font-size: 13px;
+color: var(--dark-text);
+display: block;
+margin-top: 14px;
+margin-bottom: 6px;
+}
+
+select, textarea {
+width: 100%;
+padding: 12px 14px;
+border-radius: 12px;
+border: 1.5px solid #cbd5e1;
+font-size: 14px;
+font-family: inherit;
+outline: none;
+background-color: #ffffff;
+color: var(--dark-text);
+transition: border 0.2s;
+-webkit-appearance: none;
+}
+
+select:focus, textarea:focus {
+border-color: var(--primary);
+}
+
+textarea { height: 85px; resize: none; }
+
+.btn-hitung {
+width: 100%;
+background-color: var(--primary);
+color: #ffffff;
+font-family: 'Poppins', sans-serif;
+font-weight: 700;
+border: none;
+margin-top: 18px;
+font-size: 15px;
+border-radius: 12px;
+cursor: pointer;
+padding: 14px;
+text-align: center;
+transition: background-color 0.2s;
+box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.btn-hitung:active { background-color: var(--primary-dark); }
+
+.result-section {
+margin-top: 22px;
+padding: 18px;
+border-radius: 16px;
+background: #f8fafc;
+border: 1.5px solid #e2e8f0;
+display: none;
+}
+
+.badge { display: inline-block; padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 8px; }
+.badge-safe { background: #d1fae5; color: #065f46; }
+.badge-over { background: #fee2e2; color: #991b1b; }
+.badge-under { background: #e0f2fe; color: #0369a1; }
+
+.breakdown-box { margin-top: 14px; background: #ffffff; border-radius: 12px; padding: 14px; border: 1px solid #e2e8f0; }
+.breakdown-box ul { margin: 6px 0 0 0; padding-left: 0; list-style: none; }
+.breakdown-box li { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px dashed #f1f5f9; }
+
+.suggestion-box { margin-top: 14px; padding: 12px 14px; background: #ecfdf5; border-left: 4px solid var(--primary); border-radius: 8px; font-size: 13px; color: #064e3b; }
+.suggestion-box ul { margin: 6px 0 0 0; padding-left: 18px; }
+
+.source-text { font-size: 11px; color: #94a3b8; text-align: center; margin-top: 16px; font-style: italic; }
+.error-msg { color: #dc2626; font-size: 13px; font-weight: 600; text-align: center; margin-top: 12px; display: none; }
+</style>
+</head>
+<body>
+
+<div class="card">
+<h1>KALORI.KU</h1>
+
+<label>Pilih Mode Target Kalori:</label>
+<div class="mode-container">
+<button class="mode-btn" onclick="setMode('normal', this)">Normal</button>
+<button class="mode-btn active" onclick="setMode('defisit', this)">Defisit (Turun BB)</button>
+<button class="mode-btn" onclick="setMode('surplus', this)">Surplus (Naik BB)</button>
+</div>
+
+<label for="session">Sesi Makan:</label>
+<select id="session">
+<option value="Sarapan">Sarapan</option>
+<option value="Makan Siang" selected>Makan Siang</option>
+<option value="Makan Malam">Makan Malam</option>
+<option value="Camilan">Camilan / Ngemil</option>
+</select>
+
+<label for="menuInput">Habis makan apa aja?:</label>
+<textarea id="menuInput" placeholder="Contoh: Nasi putih 2 centong, telur rebus 10 biji, es teh"></textarea>
+<div id="errorText" class="error-msg">Masukkan nama makanan, minuman, atau buah yang valid. Kata acak atau benda mati tidak dapat dihitung.</div>
+
+<button type="button" class="btn-hitung" onclick="prosesHitung()">Hitung & Analisis Menu</button>
+
+<div id="resultBox" class="result-section">
+<div style="font-size: 13px; color: #64748b;" id="sessionTitle">Sesi Makan</div>
+<div style="font-size: 26px; font-weight: 800; color: var(--dark-text); margin: 2px 0;" id="totalCalDisplay">0 kcal</div>
+<div id="statusBadge" class="badge"></div>
+
+<div class="breakdown-box">
+<strong style="font-size: 13px; color: #334155;">Rincian Estimasi Per Menu:</strong>
+<ul id="breakdownList"></ul>
+</div>
+
+<div id="suggestionArea" class="suggestion-box" style="display:none;">
+<strong>Rekomendasi & Catatan Target:</strong>
+<ul id="suggestionList"></ul>
+</div>
+</div>
+
+<div class="source-text">
+*Estimasi berdasarkan acuan gizi umum & artikel kesehatan (Halodoc / TKPI Kemenkes)
+</div>
+</div>
+
+<script>
+var currentMode = 'defisit';
+
+var foodDatabase = [
+{ keywords: ['jukut goreng', 'kol goreng', 'kubis goreng'], name: 'Jukut / Kol Goreng', cal: 140, unit: 'porsi', sug: "Sayur goreng menyerap minyak cukup banyak. Batasi porsinya saat program defisit." },
+{ keywords: ['jukut urap', 'jukut plecing', 'urap', 'plecing'], name: 'Jukut Urap / Plecing', cal: 100, unit: 'porsi' },
+{ keywords: ['jukut ares', 'jukut santan', 'jukut'], name: 'Olahan Jukut / Sayur Khas', cal: 120, unit: 'porsi' },
+
+{ keywords: ['opor ayam', 'gulai ayam', 'ayam santan', 'ayam sayur santan'], name: 'Opor / Gulai Ayam', cal: 250, unit: 'potong', sug: "Masakan bersantan tinggi lemak. Imbangi dengan air putih & sayur bening." },
+{ keywords: ['opor', 'gulai'], name: 'Lauk Gulai / Opor Bersantan', cal: 240, unit: 'porsi' },
+
+{ keywords: ['nasi goreng'], name: 'Nasi Goreng', cal: 400, unit: 'porsi', sug: "Nasi goreng tinggi minyak. Opsi lebih ringan: Nasi Putih biasa." },
+{ keywords: ['nasi setengah', 'nasi 1/2', 'setengah centong'], name: 'Nasi Putih (1/2 Centong)', cal: 85, unit: 'porsi' },
+{ keywords: ['nasi uduk'], name: 'Nasi Uduk', cal: 260, unit: 'porsi' },
+{ keywords: ['nasi kuning'], name: 'Nasi Kuning', cal: 250, unit: 'porsi' },
+{ keywords: ['nasi putih', 'nasi'], name: 'Nasi Putih', cal: 170, unit: 'centong' },
+{ keywords: ['mie instan', 'indomie'], name: 'Mie Instan (Goreng/Kuah)', cal: 380, unit: 'porsi' },
+{ keywords: ['lontong', 'ketupat'], name: 'Lontong / Ketupat', cal: 150, unit: 'pcs' },
+
+{ keywords: ['soto mie'], name: 'Soto Mie Bogor (Lengkap)', cal: 530, unit: 'porsi' },
+{ keywords: ['soto ayam'], name: 'Soto Ayam Bening', cal: 250, unit: 'porsi' },
+{ keywords: ['soto daging', 'soto santan', 'soto'], name: 'Soto Daging / Santan', cal: 380, unit: 'porsi' },
+{ keywords: ['mie ayam bakso'], name: 'Mie Ayam Bakso', cal: 510, unit: 'porsi' },
+{ keywords: ['mie ayam'], name: 'Mie Ayam Biasa', cal: 420, unit: 'porsi' },
+{ keywords: ['bakso halus', 'bakso urat', 'bakso besar'], name: 'Bakso Sapi Besar', cal: 80, unit: 'butir' },
+{ keywords: ['bakso kecil'], name: 'Bakso Sapi Kecil', cal: 35, unit: 'butir' },
+{ keywords: ['bakso'], name: 'Bakso Sapi Komplit', cal: 350, unit: 'porsi' },
+
+{ keywords: ['sayur asem', 'sayur sop', 'sop', 'bayam', 'bening'], name: 'Sayur Bening / Sop', cal: 70, unit: 'mangkuk' },
+{ keywords: ['tumis kangkung', 'kangkung', 'capcay', 'cap cai', 'tumis', 'buncis', 'tauge', 'toge', 'oseng'], name: 'Sayur Tumis / Oseng', cal: 80, unit: 'porsi' },
+{ keywords: ['sayur lodeh', 'lodeh', 'santan', 'gudeg', 'nangka', 'sayur santan'], name: 'Sayur Bersantan (Lodeh/Nangka/dll)', cal: 160, unit: 'porsi' },
+{ keywords: ['sayur'], name: 'Sayur Bening / Olahan Sayur Umum', cal: 75, unit: 'porsi' },
+
+{ keywords: ['ayam goreng', 'ayam geprek'], name: 'Ayam Goreng / Geprek', cal: 280, unit: 'potong' },
+{ keywords: ['ayam bakar', 'ayam ungkep'], name: 'Ayam Bakar / Ungkep', cal: 190, unit: 'potong' },
+{ keywords: ['ayam pop', 'ayam'], name: 'Lauk Ayam Umum', cal: 230, unit: 'potong' },
+{ keywords: ['tempe bacem', 'tahu bacem'], name: 'Tempe / Tahu Bacem', cal: 70, unit: 'pcs' },
+{ keywords: ['tempe goreng', 'tempe'], name: 'Tempe Goreng / Olahan Tempe', cal: 90, unit: 'pcs' },
+{ keywords: ['tahu goreng', 'tahu'], name: 'Tahu Goreng / Olahan Tahu', cal: 75, unit: 'pcs' },
+{ keywords: ['orek tempe', 'tempe orek', 'tumis tahu'], name: 'Orek Tempe / Tumis Tahu', cal: 110, unit: 'porsi' },
+{ keywords: ['telur dadar', 'telur ceplok'], name: 'Telur Dadar / Ceplok', cal: 120, unit: 'butir' },
+{ keywords: ['telur balado', 'telur rebus'], name: 'Telur Balado / Rebus', cal: 80, unit: 'butir' },
+{ keywords: ['rendang', 'kikil'], name: 'Rendang Daging / Kikil', cal: 230, unit: 'potong' },
+{ keywords: ['lele', 'ikan goreng'], name: 'Lele / Ikan Goreng', cal: 220, unit: 'ekor' },
+{ keywords: ['ikan bakar', 'pepes'], name: 'Ikan Bakar / Pepes', cal: 140, unit: 'potong' },
+
+{ keywords: ['burger'], name: 'Burger Daging / Ayam', cal: 310, unit: 'pcs' },
+{ keywords: ['pizza'], name: 'Pizza Slice', cal: 260, unit: 'potong' },
+{ keywords: ['kebab'], name: 'Kebab Daging / Ayam', cal: 330, unit: 'porsi' },
+{ keywords: ['dimsum'], name: 'Dimsum Kukus / Goreng', cal: 55, unit: 'pcs' },
+{ keywords: ['donat', 'pastry'], name: 'Donat / Pastry Manis', cal: 250, unit: 'pcs' },
+{ keywords: ['mie pedas', 'gacoan', 'hompimpa', 'suit', 'mie setan', 'mie iblis'], name: 'Mie Pedas Kekinian', cal: 600, unit: 'porsi' },
+{ keywords: ['crispy', 'mcd', 'kfc', 'richeese'], name: 'Ayam Crispy Fast Food', cal: 320, unit: 'potong' },
+
+{ keywords: ['telur gulung', 'cilor', 'maklor', 'telur cungkit'], name: 'Telur Gulung / Cilor', cal: 45, unit: 'tusuk' },
+{ keywords: ['cilok'], name: 'Cilok Bumbu Kacang', cal: 35, unit: 'butir' },
+{ keywords: ['cireng'], name: 'Cireng Goreng', cal: 70, unit: 'biji' },
+{ keywords: ['siomay'], name: 'Siomay Kukus', cal: 50, unit: 'biji' },
+{ keywords: ['batagor'], name: 'Batagor Goreng', cal: 75, unit: 'biji' },
+{ keywords: ['seblak komplit', 'seblak spesial', 'seblak bakso', 'seblak sosis', 'seblak ceker'], name: 'Seblak Komplit', cal: 480, unit: 'porsi' },
+{ keywords: ['seblak'], name: 'Seblak Biasa', cal: 320, unit: 'porsi' },
+{ keywords: ['gorengan', 'bakwan', 'mendoan', 'tahu isi'], name: 'Gorengan', cal: 150, unit: 'biji' },
+
+{ keywords: ['strawberry', 'stroberi', 'plum', 'blueberry', 'ceremai', 'cermai'], name: 'Strawberry / Plum / Blueberry', cal: 30, unit: 'porsi' },
+{ keywords: ['belimbing', 'jambu air'], name: 'Belimbing / Jambu Air', cal: 30, unit: 'buah' },
+{ keywords: ['rambutan'], name: 'Rambutan', cal: 35, unit: 'porsi' },
+{ keywords: ['kedondong', 'salak', 'manggis', 'leci', 'kiwi'], name: 'Kedondong / Salak / Manggis / Leci', cal: 40, unit: 'buah' },
+{ keywords: ['semangka', 'melon', 'nanas', 'jambu biji', 'guava', 'ceri'], name: 'Semangka / Melon / Nanas / Jambu Biji', cal: 50, unit: 'potong' },
+{ keywords: ['durian', 'duren'], name: 'Durian', cal: 55, unit: 'biji' },
+{ keywords: ['jeruk', 'pepaya', 'buah naga', 'anggur', 'duku', 'lengkeng'], name: 'Jeruk / Pepaya / Buah Naga / Anggur', cal: 60, unit: 'buah' },
+{ keywords: ['apel'], name: 'Apel', cal: 95, unit: 'buah' },
+{ keywords: ['pir', 'pear'], name: 'Pir / Pear', cal: 100, unit: 'buah' },
+{ keywords: ['pisang'], name: 'Pisang', cal: 105, unit: 'buah' },
+{ keywords: ['mangga'], name: 'Mangga', cal: 130, unit: 'buah' },
+{ keywords: ['alpukat'], name: 'Alpukat', cal: 160, unit: 'buah' },
+
+{ keywords: ['teh tawar', 'air putih'], name: 'Teh Tawar / Air Putih', cal: 0, unit: 'gelas' },
+{ keywords: ['kopi hitam', 'americano'], name: 'Kopi Hitam / Americano', cal: 5, unit: 'cangkir' },
+{ keywords: ['jus murni', 'jus tanpa gula'], name: 'Jus Buah Murni', cal: 90, unit: 'gelas' },
+{ keywords: ['kopi saset', 'kopi hitam manis', 'kopi manis'], name: 'Kopi Saset / Kopi Manis', cal: 100, unit: 'cangkir' },
+{ keywords: ['es teh manis', 'es teh', 'teh manis', 'es jeruk', 'nutrisari'], name: 'Es Teh Manis / Es Jeruk', cal: 110, unit: 'gelas' },
+{ keywords: ['jus apel', 'jus jeruk', 'jus buah naga', 'jus mangga', 'jus'], name: 'Jus Buah + Gula', cal: 160, unit: 'gelas' },
+{ keywords: ['kopi susu', 'latte', 'gula aren'], name: 'Kopi Susu Kekinian / Gula Aren', cal: 220, unit: 'gelas' },
+{ keywords: ['jus alpukat', 'es buah', 'es teler', 'sop buah'], name: 'Jus Alpukat / Es Buah / Es Teler', cal: 300, unit: 'mangkuk' }
+];
+
+function setMode(mode, btn) {
+currentMode = mode;
+var btns = document.querySelectorAll('.mode-btn');
+btns.forEach(function(b) { b.classList.remove('active'); });
+btn.classList.add('active');
+}
+
+function getSessionLimit(session, mode) {
+if (mode === 'defisit') {
+if (session.indexOf('Sarapan') !== -1) return { min: 300, max: 400 };
+if (session.indexOf('Siang') !== -1) return { min: 450, max: 550 };
+if (session.indexOf('Malam') !== -1) return { min: 350, max: 450 };
+return { min: 100, max: 200 };
+} else if (mode === 'surplus') {
+if (session.indexOf('Sarapan') !== -1) return { min: 500, max: 650 };
+if (session.indexOf('Siang') !== -1) return { min: 700, max: 850 };
+if (session.indexOf('Malam') !== -1) return { min: 600, max: 750 };
+return { min: 250, max: 350 };
+} else {
+if (session.indexOf('Sarapan') !== -1) return { min: 400, max: 500 };
+if (session.indexOf('Siang') !== -1) return { min: 600, max: 700 };
+if (session.indexOf('Malam') !== -1) return { min: 500, max: 600 };
+return { min: 150, max: 250 };
+}
+}
+
+function prosesHitung() {
+var textInput = document.getElementById('menuInput').value;
+var session = document.getElementById('session').value;
+var errorText = document.getElementById('errorText');
+var resultBox = document.getElementById('resultBox');
+
+errorText.style.display = "none";
+
+if(!textInput || !textInput.trim()) {
+alert("Isi dulu makanan/minuman yang kamu makan ya!");
+return;
+}
+
+// Pisahkan input berdasarkan koma atau baris baru
+var segments = textInput.toLowerCase().split(/,|\n/);
+var totalCal = 0;
+var items = [];
+var suggestions = [];
+
+for (var s = 0; s < segments.length; s++) {
+var seg = segments[s].trim();
+if(!seg) continue;
+
+// Cari angka kuantitas (misal "10", "2", "1/2")
+var qty = 1;
+var numMatch = seg.match(/\d+(.\d+)?/);
+if (numMatch) {
+qty = parseFloat(numMatch[0]);
+}
+
+var found = false;
+for (var i = 0; i < foodDatabase.length; i++) {
+var food = foodDatabase[i];
+for (var k = 0; k < food.keywords.length; k++) {
+var kw = food.keywords[k];
+if (seg.indexOf(kw) !== -1) {
+var itemCal = food.cal * qty;
+var labelName = food.name + " (" + qty + " " + (food.unit || 'porsi') + ")";
+
+items.push({ name: labelName, cal: itemCal });
+if (food.sug) suggestions.push(food.sug);
+found = true;
+break;
+}
+}
+if (found) break;
+}
+}
+
+if (items.length === 0) {
+errorText.style.display = "block";
+resultBox.style.display = "none";
+return;
+}
+
+var breakdownList = document.getElementById('breakdownList');
+breakdownList.innerHTML = "";
+
+for(var j = 0; j < items.length; j++) {
+totalCal += items[j].cal;
+var li = document.createElement('li');
+li.innerHTML = '<span>' + items[j].name + '</span><strong>' + items[j].cal + ' kcal</strong>';
+breakdownList.appendChild(li);
+}
+
+document.getElementById('sessionTitle').innerText = "Estimasi Total (" + session + " - Mode " + currentMode.toUpperCase() + ")";
+document.getElementById('totalCalDisplay').innerText = totalCal + " kcal";
+
+var limit = getSessionLimit(session, currentMode);
+var badge = document.getElementById('statusBadge');
+
+if (totalCal >= limit.min && totalCal <= limit.max) {
+badge.innerText = "PAS & AMAN! Sesuai Target Mode " + currentMode.toUpperCase() + " (" + limit.min + "-" + limit.max + " kcal)";
+badge.className = "badge badge-safe";
+
+if (currentMode === 'defisit') {
+suggestions.push("Hebat! Asupan porsi kamu berada di zona defisit ideal. Pertahankan asupan protein agar massa otot terjaga.");
+} else if (currentMode === 'surplus') {
+suggestions.push("Bagus! Kalori sesi ini pas untuk target surplus. Pastikan diimbangi dengan latihan beban agar jadi otot.");
+} else {
+suggestions.push("Porsi makan kamu sangat seimbang untuk mempertahankan berat badan ideal.");
+}
+} else if (totalCal > limit.max) {
+badge.innerText = "MELEBIHI TARGET MODE " + currentMode.toUpperCase() + " (Batas Max: " + limit.max + " kcal)";
+badge.className = "badge badge-over";
+
+if (currentMode === 'defisit') {
+suggestions.push("Asupan melebihi batas defisit. Solusi: Kurangi porsi nasi/santan di sesi makan berikutnya atau luangkan waktu jalan kaki 20–30 menit.");
+suggestions.push("Tips: Ganti minuman manis dengan air putih atau teh tawar untuk menghemat hingga 110–220 kcal.");
+} else if (currentMode === 'normal') {
+suggestions.push("Kalori sedikit di atas kebutuhan normal. Kurangi porsi camilan atau minyak gorengan di sesi makan berikutnya.");
+} else {
+suggestions.push("Kalori melebihi batas surplus sesi ini. Imbangi dengan minum air putih yang cukup dan hindari lemak jenuh berlebih.");
+}
+} else {
+badge.innerText = "DI BAWAH TARGET (" + limit.min + "-" + limit.max + " kcal)";
+badge.className = "badge badge-under";
+
+if (currentMode === 'surplus') {
+suggestions.push("Kalori masih jauh dari target surplus. Tambahkan makanan padat gizi seperti 1 buah pisang, alpukat, atau 1-2 butir telur rebus.");
+suggestions.push("Tips Surplus: Gunakan susu, kacang-kacangan, atau jus buah untuk menambah kalori tanpa membuat perut terlalu kenyang.");
+} else if (currentMode === 'normal') {
+suggestions.push("Kalori masih di bawah target normal harian. Kamu bisa menambah 1 porsi buah atau camilan sehat untuk memenuhi energi.");
+} else {
+suggestions.push("Kalori di bawah batas minimum sesi. Pastikan kamu tetap kenyang dan tidak lemas dalam beraktivitas.");
+}
+}
+
+var sugArea = document.getElementById('suggestionArea');
+var sugList = document.getElementById('suggestionList');
+sugList.innerHTML = "";
+
+if (suggestions.length > 0) {
+for(var s = 0; s < suggestions.length; s++) {
+var liSug = document.createElement('li');
+liSug.innerHTML = suggestions[s];
+sugList.appendChild(liSug);
+}
+sugArea.style.display = "block";
+} else {
+sugArea.style.display = "none";
+}
+
+resultBox.style.display = "block";
+}
+</script>
+
+</body>
+</html>
+
