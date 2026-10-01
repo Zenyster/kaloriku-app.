@@ -1482,10 +1482,17 @@
 
   checkAndResetDaily();
 </script>
-
+  
 <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
+    // Hapus registrasi lama yang masih menyimpan memori APK
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for(let registration of registrations) {
+        registration.unregister();
+      }
+      // Daftarkan ulang versi v2 yang bersih
+      navigator.serviceWorker.register('/sw.js?v=2');
+    });
   }
 </script>
 
