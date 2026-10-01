@@ -21,6 +21,7 @@
     
     body { 
       font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      /* PANGGIL NAMA FOTO KANVAS KAMU */
       background-image: url('b88ad2c983448f6955291d5e83c241a1.jpg');
       background-size: cover;
       background-position: center;
@@ -429,7 +430,7 @@
 <!-- SIDEBAR NAVIGATION -->
 <div class="sidebar" id="sidebar">
   <div>
-    <div class="sidebar-header">FITKALORI.KU</div>
+    <div class="sidebar-header">FITKALORIKU</div>
     <ul class="nav-menu">
       <li class="nav-item active" onclick="switchPage('home')">
         <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -501,7 +502,7 @@
 
     <label for="menuInput">Habis makan apa aja?:</label>
     <div class="input-wrapper">
-      <textarea id="menuInput" placeholder="Contoh: Nasi , ayam goreng , es teh 2" oninput="showSuggestions()"></textarea>
+      <textarea id="menuInput" placeholder="Contoh: Bubur ayam, martabak manis 2, roti gandum" oninput="showSuggestions()"></textarea>
       <div id="suggestionBox" class="suggestion-dropdown"></div>
     </div>
     <div id="errorText" class="error-msg">Masukkan makanan/minuman yang valid. Kata acak atau benda mati tidak dapat dihitung.</div>
@@ -620,6 +621,39 @@
   var lastAddedCal = 0;
 
   var foodDatabase = [
+    // --- OLAHAN BUBUR ---
+    { keywords: ['bubur ayam', 'buryam'], name: 'Bubur Ayam Komplit', cal: 370, unit: 'porsi', sug: "Bubur ayam lengkap dengan kerupuk & kacang. Jika defisit, kamu bisa kurangi kuah minyaknya." },
+    { keywords: ['bubur polos', 'bubur beras', 'bubur nasi'], name: 'Bubur Polos', cal: 110, unit: 'mangkuk' },
+    { keywords: ['bubur kacang hijau', 'burjo'], name: 'Bubur Kacang Hijau', cal: 240, unit: 'mangkuk' },
+    { keywords: ['bubur ketan hitam'], name: 'Bubur Ketan Hitam', cal: 220, unit: 'mangkuk' },
+    { keywords: ['bubur sumsum'], name: 'Bubur Sumsum', cal: 210, unit: 'porsi' },
+    { keywords: ['bubur manado', 'tinutuan'], name: 'Bubur Manado (Tinutuan)', cal: 175, unit: 'porsi' },
+    { keywords: ['bubur'], name: 'Bubur Ayam', cal: 370, unit: 'porsi' },
+
+    // --- MARTABAK ---
+    { keywords: ['martabak telur sapi', 'martabak telor sapi', 'martabak daging sapi'], name: 'Martabak Telur Daging Sapi', cal: 180, unit: 'potong' },
+    { keywords: ['martabak telur ayam', 'martabak telor ayam'], name: 'Martabak Telur Daging Ayam', cal: 150, unit: 'potong' },
+    { keywords: ['martabak telur', 'martabak telor'], name: 'Martabak Telur', cal: 180, unit: 'potong' },
+    { keywords: ['martabak manis cokelat keju', 'martabak cokelat keju', 'terang bulan cokelat keju'], name: 'Martabak Manis Cokelat Keju', cal: 270, unit: 'potong', sug: "Martabak manis mengandung tinggi gula dan mentega. Konsumsi secukupnya agar tidak melampaui batas harian." },
+    { keywords: ['martabak manis kacang', 'martabak kacang cokelat'], name: 'Martabak Manis Kacang Cokelat', cal: 250, unit: 'potong' },
+    { keywords: ['martabak manis', 'terang bulan', 'martabak bangka'], name: 'Martabak Manis / Terang Bulan', cal: 230, unit: 'potong' },
+
+    // --- ROTI TAWAR & VARIAN ROTI OLASAN ---
+    { keywords: ['roti tawar gandum', 'roti gandum'], name: 'Roti Tawar Gandum', cal: 65, unit: 'lembar' },
+    { keywords: ['roti tawar putih', 'roti tawar'], name: 'Roti Tawar Putih', cal: 80, unit: 'lembar' },
+    { keywords: ['roti bakar bandung', 'roti bakar'], name: 'Roti Bakar (Cokelat Keju)', cal: 320, unit: 'porsi' },
+    { keywords: ['roti canai', 'roti maryam'], name: 'Roti Canai / Maryam', cal: 300, unit: 'pcs' },
+    { keywords: ['roti sobek'], name: 'Roti Sobek', cal: 140, unit: 'potong' },
+    { keywords: ['roti cokelat', 'roti isi cokelat'], name: 'Roti Cokelat', cal: 210, unit: 'pcs' },
+    { keywords: ['roti keju', 'roti isi keju'], name: 'Roti Keju', cal: 190, unit: 'pcs' },
+    { keywords: ['roti abon', 'floss bun', 'roti daging'], name: 'Roti Abon / Daging', cal: 240, unit: 'pcs' },
+    { keywords: ['roti sosis'], name: 'Roti Sosis', cal: 230, unit: 'pcs' },
+    { keywords: ['croissant cokelat', 'pain au chocolat'], name: 'Croissant Cokelat', cal: 280, unit: 'pcs' },
+    { keywords: ['croissant'], name: 'Croissant Butter', cal: 231, unit: 'pcs' },
+    { keywords: ['garlic bread', 'roti bawang'], name: 'Garlic Bread', cal: 150, unit: 'slice' },
+    { keywords: ['bagel'], name: 'Bagel Polos', cal: 245, unit: 'pcs' },
+    { keywords: ['roti'], name: 'Roti Tawar', cal: 80, unit: 'lembar' },
+
     // --- SPECIAL GACOAN MENU ---
     { keywords: ['mie suit', 'gacoan suit', 'mie gacoan suit'], name: 'Mie Suit Gacoan', cal: 450, unit: 'porsi' },
     { keywords: ['mie hompimpa', 'gacoan hompimpa'], name: 'Mie Hompimpa Gacoan', cal: 520, unit: 'porsi' },
@@ -1149,7 +1183,7 @@
         for (var k = 0; k < food.keywords.length; k++) {
           if (seg.indexOf(food.keywords[k]) !== -1) {
             var itemCal = food.cal * qty;
-            var cleanText = seg.replace(/\d+(\.\d+)?/g, '').replace(/biji|pcs|tusuk|centong|porsi|potong|gelas|butir/gi, '').trim();
+            var cleanText = seg.replace(/\d+(\.\d+)?/g, '').replace(/biji|pcs|tusuk|centong|porsi|potong|gelas|butir|lembar|mangkuk|slice/gi, '').trim();
             var displayName = cleanText ? toTitleCase(cleanText) : food.name;
             items.push({ name: displayName + " (" + qty + " " + (food.unit || 'porsi') + ")", cal: itemCal });
             if (food.sug) suggestions.push(food.sug);
