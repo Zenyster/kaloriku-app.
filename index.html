@@ -49,16 +49,18 @@
     
     .mode-container {
       display: flex;
-      gap: 6px;
+      gap: 4px;
       margin-bottom: 18px;
       background: #f1f5f9;
       padding: 4px;
       border-radius: 12px;
+      align-items: center;
     }
 
     .mode-btn {
       flex: 1;
-      padding: 10px 4px;
+      height: 40px;
+      padding: 0 4px;
       font-family: 'Poppins', sans-serif;
       font-size: 11px;
       font-weight: 600;
@@ -68,6 +70,11 @@
       color: #64748b;
       cursor: pointer;
       transition: all 0.2s ease;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
 
     .mode-btn.active {
@@ -323,7 +330,6 @@
     }
   }
 
-  // Fungsi membuat tulisan jadi Title Case (Awal Kata Kapital)
   function toTitleCase(str) {
     return str.replace(/\w\S*/g, function(txt){
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
@@ -366,7 +372,6 @@
           if (seg.indexOf(kw) !== -1) {
             var itemCal = food.cal * qty;
             
-            // LOGIKA REVISI: Ambil kata persis dari input pengguna tanpa angka
             var cleanText = seg.replace(/\d+(\.\d+)?/g, '').replace(/biji|pcs|tusuk|centong|porsi|potong|gelas|butir|ekor|cangkir|mangkuk/gi, '').trim();
             var displayName = cleanText ? toTitleCase(cleanText) : food.name;
 
