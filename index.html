@@ -14,17 +14,22 @@
       --primary-dark: #059669;
       --dark-text: #1e293b;
       --bg-light: #f0fdf4;
-      --card-bg: #ffffff;
+      --card-bg: rgba(255, 255, 255, 0.92);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     
     body { 
       font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-      background-color: var(--bg-light); 
+      background-image: url('bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
       padding: 15px; 
       margin: 0; 
       color: var(--dark-text); 
+      min-height: 100vh;
     }
 
     /* HEADER & SIDEBAR NAVIGATION */
@@ -34,7 +39,11 @@
       justify-content: space-between;
       max-width: 480px;
       margin: 0 auto 15px auto;
-      padding: 10px 5px;
+      padding: 10px 15px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     .hamburger-btn {
@@ -59,7 +68,7 @@
     .sidebar-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.5);
       z-index: 99;
       display: none;
     }
@@ -70,7 +79,7 @@
       background: #ffffff;
       z-index: 100;
       transition: all 0.3s ease;
-      box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+      box-shadow: 4px 0 15px rgba(0,0,0,0.15);
       padding: 25px 20px;
       display: flex;
       flex-direction: column;
@@ -122,15 +131,17 @@
       font-weight: 600;
     }
 
-    /* CARD STYLING */
+    /* CARD STYLING WITH GLASSMORPHISM */
     .card { 
       background: var(--card-bg); 
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       padding: 20px; 
       border-radius: 20px; 
-      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.12); 
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
       max-width: 480px; 
       margin: 0 auto; 
-      border: 1px solid #d1fae5;
+      border: 1px solid rgba(255, 255, 255, 0.5);
     }
 
     .daily-bar-container {
@@ -403,8 +414,8 @@
       text-align: center;
     }
 
-    .source-text { font-size: 11px; color: #94a3b8; text-align: center; margin-top: 16px; font-style: italic; }
-    .watermark-text { font-size: 11px; color: #64748b; font-weight: 700; text-align: center; margin-top: 10px; letter-spacing: 0.5px; }
+    .source-text { font-size: 11px; color: #64748b; text-align: center; margin-top: 16px; font-style: italic; }
+    .watermark-text { font-size: 11px; color: #334155; font-weight: 700; text-align: center; margin-top: 10px; letter-spacing: 0.5px; }
     .error-msg { color: #dc2626; font-size: 12px; font-weight: 600; text-align: center; margin-top: 10px; display: none; }
     .page-section { display: none; }
     .page-section.active { display: block; }
@@ -530,7 +541,7 @@
     </div>
   </div>
 
-  <!-- PAGE 2: RIWAYAT HARIAN (DENGAN STATISTIK BULANAN SVG & USERNAME) -->
+  <!-- PAGE 2: RIWAYAT HARIAN -->
   <div id="pageHistory" class="page-section">
     <div id="usernameFormArea" class="user-setup-box" style="display: none;">
       <strong style="font-size: 13px; color: var(--primary-dark);">Buat Username Profil</strong>
