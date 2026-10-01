@@ -25,7 +25,6 @@
     
     body { 
       font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-      /* PANGGIL NAMA FOTO KANVAS KAMU */
       background-image: url('b88ad2c983448f6955291d5e83c241a1.jpg');
       background-size: cover;
       background-position: center;
@@ -425,6 +424,65 @@
     .error-msg { color: #dc2626; font-size: 12px; font-weight: 600; text-align: center; margin-top: 10px; display: none; }
     .page-section { display: none; }
     .page-section.active { display: block; }
+
+    /* MODAL KONFIRMASI MODERN */
+    .custom-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 999999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .custom-modal-box {
+      background: #ffffff;
+      width: 100%;
+      max-width: 340px;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+      text-align: center;
+      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .custom-modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn-modal-cancel {
+      flex: 1;
+      background: #f1f5f9;
+      color: #64748b;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-modal-confirm {
+      flex: 1;
+      background: #ef4444;
+      color: #ffffff;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -514,13 +572,13 @@
   <!-- PAGE 1: BERANDA -->
   <div id="pageHome" class="page-section active">
 
-    <!-- BAR PROGRES HARIAN (KHUSUS HANYA DI BERANDA) -->
+    <!-- BAR PROGRES HARIAN -->
     <div class="daily-bar-container">
       <div class="daily-header-flex">
         <span>Total Hari Ini:</span>
         <div>
           <span id="dailyTotalText">0 / 1500 kcal</span>
-          <button type="button" class="btn-reset-daily" onclick="resetTotalHarian()" title="Reset Total Hari Ini">Reset Hari Ini</button>
+          <button type="button" class="btn-reset-daily" onclick="openResetModal()" title="Reset Total Hari Ini">Reset Hari Ini</button>
         </div>
       </div>
       <div class="progress-bar-bg">
@@ -662,6 +720,18 @@
     </form>
   </div>
 
+</div>
+
+<!-- MODAL KONFIRMASI RESET HARIAN -->
+<div id="resetModal" class="custom-modal-overlay">
+  <div class="custom-modal-box">
+    <h4 style="margin: 0 0 8px 0; color: #1e293b; font-size: 16px; font-weight: 700;">Reset Total Hari Ini?</h4>
+    <p style="margin: 0; color: #64748b; font-size: 12px; line-height: 1.4;">Apakah kamu yakin ingin mengosongkan total akumulasi kalori hari ini kembali ke 0?</p>
+    <div class="custom-modal-actions">
+      <button class="btn-modal-cancel" onclick="closeResetModal()">Batal</button>
+      <button class="btn-modal-confirm" onclick="confirmResetHarian()">Ya, Reset</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -934,7 +1004,7 @@
   function saveUsername() {
     var nameInput = document.getElementById('usernameInput').value.trim();
     if (!nameInput) {
-      alert("Masukkan username kamu terlebih dahulu!");
+      showToast("Masukkan username kamu terlebih dahulu!");
       return;
     }
     localStorage.setItem('kalori_user_name', nameInput);
@@ -1015,12 +1085,24 @@
     }
   }
 
-  // ELEMEN TOAST NOTIFIKASI MELAYANG DI ATAS
+  // ELEMEN TOAST NOTIFIKASI MELAYANG
   if (!document.getElementById('toastNotif')) {
     const toastDiv = document.createElement('div');
     toastDiv.id = 'toastNotif';
     toastDiv.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #ffffff; color: #1e293b; border: 1px solid #10b981; padding: 10px 18px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); font-size: 13px; font-weight: 600; z-index: 99999; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; pointer-events: none; text-align: center; font-family: sans-serif;';
     document.body.appendChild(toastDiv);
+  }
+
+  function showToast(message) {
+    var toast = document.getElementById('toastNotif');
+    toast.innerHTML = message;
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+    toast.style.opacity = '1';
+
+    setTimeout(function() {
+      toast.style.transform = 'translateX(-50%) translateY(-100px)';
+      toast.style.opacity = '0';
+    }, 2500);
   }
 
   function simpanKeHarian() {
@@ -1037,36 +1119,14 @@
 
     updateDailyUI();
 
-    // 1. Dapatkan Nama Sesi Makan Yang Dipilih
     var sessionName = document.getElementById('session').value;
 
-    // 2. Munculkan Tembakan Confetti Hijau Tipis dari Kanan & Kiri
     if (typeof confetti === 'function') {
-      confetti({
-        particleCount: 25,
-        spread: 50,
-        origin: { x: 0.1, y: 0.8 },
-        colors: ['#10b981', '#34d399', '#059669']
-      });
-      confetti({
-        particleCount: 25,
-        spread: 50,
-        origin: { x: 0.9, y: 0.8 },
-        colors: ['#10b981', '#34d399', '#059669']
-      });
+      confetti({ particleCount: 25, spread: 50, origin: { x: 0.1, y: 0.8 }, colors: ['#10b981', '#34d399', '#059669'] });
+      confetti({ particleCount: 25, spread: 50, origin: { x: 0.9, y: 0.8 }, colors: ['#10b981', '#34d399', '#059669'] });
     }
 
-    // 3. Tampilkan Notifikasi Toast Melayang di Atas
-    var toast = document.getElementById('toastNotif');
-    toast.innerHTML = '✓ Sesi ' + sessionName + ' totalnya ' + lastCalculatedCal + ' kcal';
-    toast.style.transform = 'translateX(-50%) translateY(0)';
-    toast.style.opacity = '1';
-
-    // Hilangkan otomatis setelah 2.5 detik
-    setTimeout(function() {
-      toast.style.transform = 'translateX(-50%) translateY(-100px)';
-      toast.style.opacity = '0';
-    }, 2500);
+    showToast('✓ Sesi ' + sessionName + ' totalnya ' + lastCalculatedCal + ' kcal');
   }
 
   function undoLastEntry() {
@@ -1076,21 +1136,30 @@
     var newTotal = Math.max(0, currentDailyTotal - lastAddedCal);
 
     localStorage.setItem(todayKey, newTotal);
-    alert("Berhasil membatalkan " + lastAddedCal + " kcal!");
+    showToast('✓ Sesi terakhir sebesar ' + lastAddedCal + ' kcal dibatalkan');
     
     lastAddedCal = 0;
     document.getElementById('undoArea').style.display = "none";
     updateDailyUI();
   }
 
-  function resetTotalHarian() {
-    if (confirm("Apakah kamu yakin ingin mengosongkan total kalori hari ini kembali ke 0?")) {
-      var todayKey = getTodayKey();
-      localStorage.setItem(todayKey, 0);
-      lastAddedCal = 0;
-      document.getElementById('undoArea').style.display = "none";
-      updateDailyUI();
-    }
+  // MODAL RESET HARIAN CUSTOM
+  function openResetModal() {
+    document.getElementById('resetModal').style.display = 'flex';
+  }
+
+  function closeResetModal() {
+    document.getElementById('resetModal').style.display = 'none';
+  }
+
+  function confirmResetHarian() {
+    var todayKey = getTodayKey();
+    localStorage.setItem(todayKey, 0);
+    lastAddedCal = 0;
+    document.getElementById('undoArea').style.display = "none";
+    updateDailyUI();
+    closeResetModal();
+    showToast('✓ Total kalori hari ini berhasil dikosongkan');
   }
 
   // EVALUASI & PENILAIAN HARIAN
@@ -1247,7 +1316,7 @@
     errorText.style.display = "none";
 
     if(!textInput || !textInput.trim()) {
-      alert("Isi dulu makanan/minuman yang kamu makan ya!");
+      showToast("Isi dulu makanan/minuman yang kamu makan ya!");
       return;
     }
 
