@@ -21,7 +21,7 @@
     
     body { 
       font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-      background-image: url('bg.jpg');
+      background-image: url('https://i.ibb.co/L8G8xL6/167040.jpg');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
@@ -40,10 +40,11 @@
       max-width: 480px;
       margin: 0 auto 15px auto;
       padding: 10px 15px;
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
 
     .hamburger-btn {
@@ -134,14 +135,14 @@
     /* CARD STYLING WITH GLASSMORPHISM */
     .card { 
       background: var(--card-bg); 
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       padding: 20px; 
       border-radius: 20px; 
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
       max-width: 480px; 
       margin: 0 auto; 
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.6);
     }
 
     .daily-bar-container {
@@ -428,7 +429,7 @@
 <!-- SIDEBAR NAVIGATION -->
 <div class="sidebar" id="sidebar">
   <div>
-    <div class="sidebar-header">FITKALORIKU</div>
+    <div class="sidebar-header">FITKALORI.KU</div>
     <ul class="nav-menu">
       <li class="nav-item active" onclick="switchPage('home')">
         <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -500,7 +501,7 @@
 
     <label for="menuInput">Habis makan apa aja?:</label>
     <div class="input-wrapper">
-      <textarea id="menuInput" placeholder="Contoh: Telur gulung 5, es teh, mie gacoan" oninput="showSuggestions()"></textarea>
+      <textarea id="menuInput" placeholder="Contoh: Nasi , ayam goreng , es teh 2" oninput="showSuggestions()"></textarea>
       <div id="suggestionBox" class="suggestion-dropdown"></div>
     </div>
     <div id="errorText" class="error-msg">Masukkan makanan/minuman yang valid. Kata acak atau benda mati tidak dapat dihitung.</div>
