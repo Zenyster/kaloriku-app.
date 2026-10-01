@@ -1,8 +1,8 @@
 {
   "name": "FITKALORIKU",
   "short_name": "FITKALORI",
-  "description": "Aplikasi penghitung dan pelacak kalori makanan harian",
-  "start_url": "/",
+  "description": "Aplikasi pelacak kalori makanan harian",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#10b981",
