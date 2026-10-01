@@ -243,9 +243,47 @@
       box-shadow: 0 3px 6px rgba(16, 185, 129, 0.25);
     }
 
+    /* STYLING SESI MAKAN PILL CUSTOM ELEGANT */
+    .session-container {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 15px;
+      background: #ffffff;
+      padding: 4px;
+      border-radius: 12px;
+      border: 1.5px solid #cbd5e1;
+      align-items: center;
+    }
+
+    .session-btn {
+      flex: 1;
+      height: 38px;
+      padding: 0 2px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      border: none;
+      border-radius: 9px;
+      background: transparent;
+      color: #475569;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .session-btn.active {
+      background-color: var(--primary) !important;
+      color: #ffffff !important;
+      font-weight: 700;
+      box-shadow: 0 3px 6px rgba(16, 185, 129, 0.25);
+    }
+
     label { font-weight: 600; font-size: 13px; color: var(--dark-text); display: block; margin-top: 12px; margin-bottom: 6px; }
     
-    select, textarea, input[type="text"], input[type="email"] { 
+    textarea, input[type="text"], input[type="email"] { 
       width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 14px; font-family: inherit; outline: none; background-color: #ffffff;
     }
 
@@ -599,13 +637,15 @@
       <button class="mode-btn" onclick="setMode('surplus', this)">Surplus (Naik BB)</button>
     </div>
 
-    <label for="session">Sesi Makan:</label>
-    <select id="session">
-      <option value="Sarapan">Sarapan</option>
-      <option value="Makan Siang" selected>Makan Siang</option>
-      <option value="Makan Malam">Makan Malam</option>
-      <option value="Camilan">Camilan / Ngemil</option>
-    </select>
+    <!-- SESI MAKAN PILL CUSTOM ELEGANT -->
+    <label>Sesi Makan:</label>
+    <div class="session-container">
+      <button type="button" class="session-btn" onclick="setSession('Sarapan', this)">Sarapan</button>
+      <button type="button" class="session-btn active" onclick="setSession('Makan Siang', this)">Makan Siang</button>
+      <button type="button" class="session-btn" onclick="setSession('Makan Malam', this)">Makan Malam</button>
+      <button type="button" class="session-btn" onclick="setSession('Camilan', this)">Camilan</button>
+    </div>
+    <input type="hidden" id="session" value="Makan Siang">
 
     <label for="menuInput">Habis makan apa aja?:</label>
     <div class="input-wrapper">
@@ -937,6 +977,12 @@
     { keywords: ['kopi susu', 'latte', 'gula aren'], name: 'Kopi Susu / Gula Aren', cal: 220, unit: 'gelas' },
     { keywords: ['jus alpukat', 'es buah', 'es teler', 'sop buah'], name: 'Jus Alpukat / Es Buah', cal: 300, unit: 'mangkuk' }
   ];
+
+  function setSession(val, btn) {
+    document.getElementById('session').value = val;
+    document.querySelectorAll('.session-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
 
   // LOGIKA AUTOCOMPLETE SUGGESTIONS
   function showSuggestions() {
@@ -1448,19 +1494,20 @@
     </div>
   </div>
   <div style="display: flex; align-items: center; gap: 8px;">
-    <a href="/KaloriKu.apk?v=1" download style="background: #10b981; color: white; text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; transition: all 0.2s;">Download</a>
+    <!-- PERBAIKAN LINK KE FILE LOCAL KaloriKu.apk -->
+    <a href="/KaloriKu.apk" download="KaloriKu.apk" style="background: #10b981; color: white; text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; transition: all 0.2s;">Download</a>
     <button onclick="closeApkBanner()" style="background: transparent; border: none; font-size: 18px; color: #9ca3af; cursor: pointer; padding: 0 4px;">&times;</button>
   </div>
 </div>
 
 <script>
-  if (!localStorage.getItem('hideApkBanner')) {
+  if (!localStorage.getItem('hideApkBanner_v2')) {
     document.getElementById('apkBanner').style.display = 'flex';
   }
 
   function closeApkBanner() {
     document.getElementById('apkBanner').style.display = 'none';
-    localStorage.setItem('hideApkBanner', 'true');
+    localStorage.setItem('hideApkBanner_v2', 'true');
   }
 </script>
 
