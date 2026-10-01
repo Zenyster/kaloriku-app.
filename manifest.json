@@ -1,11 +1,13 @@
 {
+  "id": "/",
   "name": "FITKALORIKU",
   "short_name": "FITKALORI",
   "description": "Aplikasi pelacak kalori makanan harian",
-  "start_url": "./index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#10b981",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/2921/2921822.png",
