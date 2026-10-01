@@ -1281,6 +1281,156 @@
     navigator.serviceWorker.register('/sw.js');
   }
 </script>
+<!-- Banner Minimalis Download APK -->
+<div id="apk-banner" class="apk-banner">
+  <div class="apk-banner-content">
+    <div class="apk-info">
+      <img src="https://cdn-icons-png.flaticon.com/512/2921/2921822.png" alt="FITKALORIKU" class="apk-icon">
+      <div class="apk-text">
+        <span class="apk-title">FITKALORIKU App</span>
+        <span class="apk-subtitle">Lebih cepat & praktis di HP</span>
+      </div>
+    </div>
+    <div class="apk-actions">
+      <a href="/fitkaloriku.apk" download class="btn-download">Install</a>
+      <button onclick="dismissApkBanner()" class="btn-close" aria-label="Tutup">✕</button>
+    </div>
+  </div>
+</div>
 
+<style>
+  /* Styling Banner Minimalis */
+  .apk-banner {
+    display: none;
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 24px);
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    z-index: 9999;
+    padding: 10px 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translate(-50%, 100%);
+      opacity: 0;
+    }
+    to {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+  }
+
+  .apk-banner-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .apk-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .apk-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+
+  .apk-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .apk-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.2;
+  }
+
+  .apk-subtitle {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+
+  .apk-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-download {
+    background-color: #10b981;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+  }
+
+  .btn-download:active {
+    transform: scale(0.96);
+    background-color: #059669;
+  }
+
+  .btn-close {
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    font-size: 14px;
+    padding: 4px;
+    cursor: pointer;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+
+<script>
+  // Logika Menampilkan Banner
+  document.addEventListener('DOMContentLoaded', () => {
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isDismissed = localStorage.getItem('apk_banner_dismissed');
+
+    // Hanya tampil jika dibuka via HP dan pengguna belum pernah menutupnya
+    if (isMobile && !isDismissed) {
+      setTimeout(() => {
+        document.getElementById('apk-banner').style.display = 'block';
+      }, 1500); // Muncul mulus 1.5 detik setelah web dibuka
+    }
+  });
+
+  function dismissApkBanner() {
+    const banner = document.getElementById('apk-banner');
+    banner.style.opacity = '0';
+    banner.style.transition = 'opacity 0.3s ease';
+    setTimeout(() => {
+      banner.style.display = 'none';
+    }, 300);
+    // Disimpan di localStorage agar tidak mengganggu lagi di kunjungan berikutnya
+    localStorage.setItem('apk_banner_dismissed', 'true');
+  }
+</script>
+  
 </body>
 </html>
