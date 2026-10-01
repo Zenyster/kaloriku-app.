@@ -40,10 +40,12 @@
     .hamburger-btn {
       background: none;
       border: none;
-      font-size: 24px;
-      color: var(--primary-dark);
-      cursor: pointer;
       padding: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-dark);
     }
 
     .brand-title {
@@ -96,12 +98,28 @@
       margin-bottom: 8px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       transition: background 0.2s;
     }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      stroke: #64748b;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.2s;
+    }
+
     .nav-item:active, .nav-item.active {
       background-color: #ecfdf5;
       color: var(--primary-dark);
+    }
+
+    .nav-item.active svg {
+      stroke: var(--primary-dark);
     }
 
     /* CARD STYLING */
@@ -188,10 +206,12 @@
 
     .btn-reset {
       width: 100%; background-color: #f1f5f9; color: #64748b; font-weight: 600; border: 1px solid #cbd5e1; margin-top: 8px; font-size: 13px; border-radius: 12px; cursor: pointer; padding: 9px; text-align: center;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
     }
 
     .btn-save {
       width: 100%; background-color: #0284c7; color: #ffffff; font-weight: 700; border: none; margin-top: 12px; font-size: 13px; border-radius: 10px; cursor: pointer; padding: 10px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
     }
 
     .result-section { margin-top: 18px; padding: 15px; border-radius: 16px; background: #f8fafc; border: 1.5px solid #e2e8f0; display: none; }
@@ -220,24 +240,36 @@
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
+<!-- SIDEBAR NAVIGATION DENGAN IKON ELEGAN (SVG) -->
 <div class="sidebar" id="sidebar">
   <div class="sidebar-header">FITKALORIKU</div>
   <ul class="nav-menu">
-    <li class="nav-item active" onclick="switchPage('home')">🏠 Beranda (Hitung)</li>
-    <li class="nav-item" onclick="switchPage('history')">📊 Riwayat Harian</li>
-    <li class="nav-item" onclick="switchPage('feedback')">💡 Saran Fitur & Menu</li>
+    <li class="nav-item active" onclick="switchPage('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      <span>Beranda</span>
+    </li>
+    <li class="nav-item" onclick="switchPage('history')">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+      <span>Riwayat Harian</span>
+    </li>
+    <li class="nav-item" onclick="switchPage('feedback')">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <span>Saran Fitur & Menu</span>
+    </li>
   </ul>
 </div>
 
 <div class="app-header">
-  <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
+  <button class="hamburger-btn" onclick="toggleSidebar()">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+  </button>
   <h1 class="brand-title">KALORI.KU</h1>
   <div style="width: 24px;"></div>
 </div>
 
 <div class="card">
   
-  <!-- BAR PROGRES HARIAN (OTOMATIS SESUAI MODE) -->
+  <!-- BAR PROGRES HARIAN -->
   <div class="daily-bar-container">
     <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;">
       <span>Total Hari Ini:</span>
@@ -273,7 +305,10 @@
     <div id="errorText" class="error-msg">Masukkan makanan/minuman yang valid. Kata acak atau benda mati tidak dapat dihitung.</div>
 
     <button type="button" class="btn-hitung" onclick="prosesHitung()">Total Kalorimu</button>
-    <button type="button" class="btn-reset" onclick="resetForm()">🔄 Reset / Hitung Ulang</button>
+    <button type="button" class="btn-reset" onclick="resetForm()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+      <span>Reset / Hitung Ulang</span>
+    </button>
 
     <div id="resultBox" class="result-section">
       <div style="font-size: 12px; color: #64748b;" id="sessionTitle">Sesi Makan</div>
@@ -285,26 +320,28 @@
         <ul id="breakdownList"></ul>
       </div>
 
-      <!-- KOTAK REKOMENDASI TAMPIL KEMBALI -->
       <div id="suggestionArea" class="suggestion-box" style="display:none;">
         <strong>Rekomendasi & Catatan Target:</strong>
         <ul id="suggestionList"></ul>
       </div>
 
-      <button type="button" class="btn-save" onclick="simpanKeHarian()">➕ Simpan Sesi Ini ke Hari Ini</button>
+      <button type="button" class="btn-save" onclick="simpanKeHarian()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>Simpan Sesi Ini ke Hari Ini</span>
+      </button>
     </div>
   </div>
 
   <!-- PAGE 2: RIWAYAT HARIAN -->
   <div id="pageHistory" class="page-section">
-    <h3 style="margin-top: 0; color: var(--primary-dark); font-size: 16px;">📊 Riwayat Kalori Harian</h3>
+    <h3 style="margin-top: 0; color: var(--primary-dark); font-size: 16px;">Riwayat Kalori Harian</h3>
     <p style="font-size: 12px; color: #64748b;">Disimpan otomatis di perangkat kamu. Total akan ter-reset otomatis setiap berganti hari.</p>
     <ul class="history-list" id="historyListDisplay"></ul>
   </div>
 
   <!-- PAGE 3: SARAN FITUR & MENU -->
   <div id="pageFeedback" class="page-section">
-    <h3 style="margin-top: 0; color: var(--primary-dark); font-size: 16px;">💡 Saran Fitur & Request Menu</h3>
+    <h3 style="margin-top: 0; color: var(--primary-dark); font-size: 16px;">Saran Fitur & Request Menu</h3>
     <p style="font-size: 12px; color: #64748b;">Punya ide menu baru yang belum ada, atau saran fitur? Tulis di bawah!</p>
     
     <form action="https://formspree.io/f/xbglbepn" method="POST" id="feedbackForm">
@@ -327,7 +364,6 @@
   var currentMode = 'defisit';
   var lastCalculatedCal = 0;
 
-  // DATABASE MAKANAN LENGKAP KEMBALI 100%
   var foodDatabase = [
     // --- SPECIAL GACOAN MENU ---
     { keywords: ['mie suit', 'gacoan suit', 'mie gacoan suit'], name: 'Mie Suit Gacoan', cal: 450, unit: 'porsi' },
@@ -497,7 +533,7 @@
   function getDailyLimit(mode) {
     if (mode === 'defisit') return 1500;
     if (mode === 'surplus') return 2200;
-    return 2000; // Normal
+    return 2000;
   }
 
   function getSessionLimit(session, mode) {
@@ -609,11 +645,14 @@
 
     if (page === 'home') {
       document.getElementById('pageHome').classList.add('active');
+      document.querySelectorAll('.nav-item')[0].classList.add('active');
     } else if (page === 'history') {
       renderHistory();
       document.getElementById('pageHistory').classList.add('active');
+      document.querySelectorAll('.nav-item')[1].classList.add('active');
     } else if (page === 'feedback') {
       document.getElementById('pageFeedback').classList.add('active');
+      document.querySelectorAll('.nav-item')[2].classList.add('active');
     }
   }
 
@@ -700,7 +739,6 @@
     document.getElementById('sessionTitle').innerText = "Estimasi Total (" + session + " - Mode " + currentMode.toUpperCase() + ")";
     document.getElementById('totalCalDisplay').innerText = totalCal + " kcal";
 
-    // BADGE PER SESI & REKOMENDASI HAPUS
     var limit = getSessionLimit(session, currentMode);
     var badge = document.getElementById('statusBadge');
 
