@@ -1,6 +1,7 @@
 {
   "name": "FITKALORIKU",
   "short_name": "FITKALORI",
+  "description": "Aplikasi penghitung dan pelacak kalori makanan harian",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -9,7 +10,8 @@
     {
       "src": "https://cdn-icons-png.flaticon.com/512/2921/2921822.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
