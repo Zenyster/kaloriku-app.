@@ -531,11 +531,14 @@
 
 <!-- Fullscreen Loading Screen dengan Telur Gelinding -->
 <div id="loadingScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: system-ui, -apple-system, sans-serif; transition: opacity 0.5s ease, visibility 0.5s ease;">
+  
   <div style="position: relative; width: 180px; height: 60px; display: flex; align-items: center; justify-content: flex-start; overflow: hidden; margin-bottom: 12px;">
     <div id="eggIcon" style="font-size: 36px; animation: rollEgg 1.5s linear infinite; display: inline-block;">🥚</div>
   </div>
+
   <h3 style="margin: 0 0 6px 0; color: #1f2937; font-size: 18px; font-weight: 700; letter-spacing: 0.5px;">FITKALORIKU</h3>
   <p style="margin: 0 0 20px 0; color: #10b981; font-size: 13px; font-weight: 600;">Memuat data kalori...</p>
+
   <div style="width: 200px; height: 6px; background: #e5e7eb; border-radius: 10px; overflow: hidden; position: relative;">
     <div id="loadingProgress" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 10px; transition: width 0.3s ease;"></div>
   </div>
@@ -1486,14 +1489,7 @@
   checkAndResetDaily();
 </script>
 
-<!-- REGISTER SERVICE WORKER UNTUK IZIN NOTIFIKASI ANDROID -->
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW Fail', err));
-  }
-</script>
-
-<!-- LOGIKA NOTIFIKASI PENGINGAT JAM MAKAN -->
+<!-- LOGIKA NOTIFIKASI PENGINGAT JAM MAKAN OTOMATIS -->
 <script>
   const MEAL_SCHEDULES = [
     { name: "Sarapan", hour: 7, minute: 0, text: "Waktunya sarapan! Jangan lupa catat kalorimu di KALORI.KU ya 🍳" },
@@ -1512,8 +1508,8 @@
         updateNotificationButton();
         showToast('✓ Pengingat jam makan berhasil diaktifkan!');
         checkMealNotifications();
-      } else if (permission === 'denied') {
-        showToast('Izin ditolak. Buka Setelan Situs di Chrome untuk mengizinkan Notifikasi.');
+      } else {
+        showToast('Izin notifikasi ditolak oleh sistem HP.');
       }
     });
   }
@@ -1529,18 +1525,7 @@
 
   function sendMealNotification(title, body) {
     if (Notification.permission === 'granted') {
-      if (navigator.serviceWorker && navigator.serviceWorker.ready) {
-        navigator.serviceWorker.ready.then(registration => {
-          registration.showNotification(title, {
-            body: body,
-            icon: '/logo.png',
-            badge: '/logo.png',
-            vibrate: [200, 100, 200]
-          });
-        });
-      } else {
-        new Notification(title, { body: body, icon: '/logo.png' });
-      }
+      new Notification(title, { body: body, icon: '/logo.png' });
     }
   }
 
