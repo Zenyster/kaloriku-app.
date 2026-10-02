@@ -615,6 +615,13 @@
   <!-- PAGE 1: BERANDA -->
   <div id="pageHome" class="page-section active">
 
+    <!-- TOMBOL PENGINGAT JAM MAKAN -->
+    <div style="margin-bottom: 12px; text-align: center;">
+      <button type="button" id="btnNotification" onclick="requestNotificationPermission()" style="background: #ffffff; border: 1.5px solid #10b981; color: #10b981; font-family: inherit; font-size: 11px; font-weight: 700; padding: 6px 14px; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+        🔔 Aktifkan Pengingat Jam Makan
+      </button>
+    </div>
+
     <!-- BAR PROGRES HARIAN -->
     <div class="daily-bar-container">
       <div class="daily-header-flex">
@@ -1482,15 +1489,14 @@
 
   checkAndResetDaily();
 </script>
-  
+
+<!-- REGISTRASI SERVICE WORKER UNTUK PWA BERSIH -->
 <script>
   if ('serviceWorker' in navigator) {
-    // Hapus registrasi lama yang masih menyimpan memori APK
     navigator.serviceWorker.getRegistrations().then(function(registrations) {
       for(let registration of registrations) {
         registration.unregister();
       }
-      // Daftarkan ulang versi v2 yang bersih
       navigator.serviceWorker.register('/sw.js?v=2');
     });
   }
@@ -1499,7 +1505,6 @@
 <!-- BANNER INSTALL PWA RESMI DENGAN LOGO TELUR MATA SAPI -->
 <div id="pwaBanner" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 16px; padding: 12px 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 9999; align-items: center; justify-content: space-between; font-family: system-ui, -apple-system, sans-serif;">
   <div style="display: flex; align-items: center; gap: 12px;">
-    <!-- LOGO TELUR MATA SAPI -->
     <img src="/logo.png" alt="FITKALORIKU" style="width: 42px; height: 42px; border-radius: 10px; object-fit: cover;">
     <div>
       <h4 style="margin: 0; font-size: 14px; font-weight: 700; color: #1f2937;">FITKALORIKU App</h4>
@@ -1519,10 +1524,14 @@
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    if (!localStorage.getItem('hidePwaBanner')) {
+    if (!localStorage.getItem('hidePwaBanner_v3')) {
       pwaBanner.style.display = 'flex';
     }
   });
+
+  if (!localStorage.getItem('hidePwaBanner_v3')) {
+    pwaBanner.style.display = 'flex';
+  }
 
   function installPWA() {
     if (deferredPrompt) {
@@ -1535,14 +1544,94 @@
         closePwaBanner();
       });
     } else {
-      showToast('Tekan tombol opsi browser (⋮) lalu pilih "Tambahkan ke Layar Utama"');
+      showToast('Klik titik tiga (⋮) Chrome > Tambahkan ke Layar Utama');
     }
   }
 
   function closePwaBanner() {
     pwaBanner.style.display = 'none';
-    localStorage.setItem('hidePwaBanner', 'true');
+    localStorage.setItem('hidePwaBanner_v3', 'true');
   }
+</script>
+
+<!-- LOGIKA NOTIFIKASI PENGINGAT JAM MAKAN OTOMATIS -->
+<script>
+  const MEAL_SCHEDULES = [
+    { name: "Sarapan", hour: 7, minute: 0, text: "Waktunya sarapan! Jangan lupa catat kalorimu di KALORI.KU ya 🍳" },
+    { name: "Makan Siang", hour: 12, minute: 0, text: "Sudah jam makan siang nih! Yuk masukin menu makan siangmu 🥗" },
+    { name: "Makan Malam", hour: 19, minute: 0, text: "Waktunya makan malam. Tetap kontrol porsi sesuai targetmu ya! 🍲" }
+  ];
+
+  function requestNotificationPermission() {
+    if (!('Notification' in window)) {
+      showToast('Browser kamu tidak mendukung fitur notifikasi.');
+      return;
+    }
+
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        updateNotificationButton();
+        showToast('✓ Pengingat jam makan berhasil diaktifkan!');
+        checkMealNotifications();
+      } else {
+        showToast('Izin notifikasi ditolak oleh sistem HP.');
+      }
+    });
+  }
+
+  function updateNotificationButton() {
+    const btn = document.getElementById('btnNotification');
+    if (btn) {
+      btn.style.background = '#10b981';
+      btn.style.color = '#ffffff';
+      btn.innerText = '🔔 Pengingat Makan Aktif';
+    }
+  }
+
+  function sendMealNotification(title, body) {
+    if (Notification.permission === 'granted') {
+      if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+        navigator.serviceWorker.ready.then(registration => {
+          registration.showNotification(title, {
+            body: body,
+            icon: '/logo.png',
+            badge: '/logo.png',
+            vibrate: [200, 100, 200]
+          });
+        });
+      } else {
+        new Notification(title, { body: body, icon: '/logo.png' });
+      }
+    }
+  }
+
+  function checkMealNotifications() {
+    if (Notification.permission !== 'granted') return;
+
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const todayStr = now.toDateString();
+
+    MEAL_SCHEDULES.forEach(schedule => {
+      const notifKey = `notif_sent_${schedule.name}_${todayStr}`;
+      
+      if (currentHour === schedule.hour && currentMinute === schedule.minute) {
+        if (!localStorage.getItem(notifKey)) {
+          sendMealNotification(`Pengingat ${schedule.name}`, schedule.text);
+          localStorage.setItem(notifKey, 'true');
+        }
+      }
+    });
+  }
+
+  setInterval(checkMealNotifications, 30000);
+
+  window.addEventListener('load', () => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      updateNotificationButton();
+    }
+  });
 </script>
 
 </body>
