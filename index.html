@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>KALORI.KU</title>
   
-  <!-- FAVICON & PWA ICON DENGAN LOGO TELUR MATA SAPI -->
+  <!-- FAVICON & LOGO TELUR MATA SAPI -->
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="apple-touch-icon" href="/logo.png">
-  <link rel="manifest" href="/manifest.json">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1490,70 +1489,6 @@
   checkAndResetDaily();
 </script>
 
-<!-- REGISTRASI SERVICE WORKER UNTUK PWA BERSIH -->
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-      for(let registration of registrations) {
-        registration.unregister();
-      }
-      navigator.serviceWorker.register('/sw.js?v=2');
-    });
-  }
-</script>
-
-<!-- BANNER INSTALL PWA RESMI DENGAN LOGO TELUR MATA SAPI -->
-<div id="pwaBanner" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 16px; padding: 12px 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 9999; align-items: center; justify-content: space-between; font-family: system-ui, -apple-system, sans-serif;">
-  <div style="display: flex; align-items: center; gap: 12px;">
-    <img src="/logo.png" alt="FITKALORIKU" style="width: 42px; height: 42px; border-radius: 10px; object-fit: cover;">
-    <div>
-      <h4 style="margin: 0; font-size: 14px; font-weight: 700; color: #1f2937;">FITKALORIKU App</h4>
-      <p style="margin: 2px 0 0; font-size: 11px; color: #6b7280;">Pasang ke Layar Utama HP</p>
-    </div>
-  </div>
-  <div style="display: flex; align-items: center; gap: 8px;">
-    <button id="btnInstallPwa" onclick="installPWA()" style="background: #10b981; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">Install</button>
-    <button onclick="closePwaBanner()" style="background: transparent; border: none; font-size: 18px; color: #9ca3af; cursor: pointer; padding: 0 4px;">&times;</button>
-  </div>
-</div>
-
-<script>
-  let deferredPrompt;
-  const pwaBanner = document.getElementById('pwaBanner');
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (!localStorage.getItem('hidePwaBanner_v3')) {
-      pwaBanner.style.display = 'flex';
-    }
-  });
-
-  if (!localStorage.getItem('hidePwaBanner_v3')) {
-    pwaBanner.style.display = 'flex';
-  }
-
-  function installPWA() {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          showToast('✓ FITKALORIKU berhasil dipasang!');
-        }
-        deferredPrompt = null;
-        closePwaBanner();
-      });
-    } else {
-      showToast('Klik titik tiga (⋮) Chrome > Tambahkan ke Layar Utama');
-    }
-  }
-
-  function closePwaBanner() {
-    pwaBanner.style.display = 'none';
-    localStorage.setItem('hidePwaBanner_v3', 'true');
-  }
-</script>
-
 <!-- LOGIKA NOTIFIKASI PENGINGAT JAM MAKAN OTOMATIS -->
 <script>
   const MEAL_SCHEDULES = [
@@ -1590,18 +1525,7 @@
 
   function sendMealNotification(title, body) {
     if (Notification.permission === 'granted') {
-      if (navigator.serviceWorker && navigator.serviceWorker.ready) {
-        navigator.serviceWorker.ready.then(registration => {
-          registration.showNotification(title, {
-            body: body,
-            icon: '/logo.png',
-            badge: '/logo.png',
-            vibrate: [200, 100, 200]
-          });
-        });
-      } else {
-        new Notification(title, { body: body, icon: '/logo.png' });
-      }
+      new Notification(title, { body: body, icon: '/logo.png' });
     }
   }
 
