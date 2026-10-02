@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>KALORI.KU</title>
   
-  <!-- FAVICON & LOGO TELUR MATA SAPI -->
+  <!-- FAVICON & LOGO -->
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="apple-touch-icon" href="/logo.png">
 
@@ -531,14 +531,11 @@
 
 <!-- Fullscreen Loading Screen dengan Telur Gelinding -->
 <div id="loadingScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: system-ui, -apple-system, sans-serif; transition: opacity 0.5s ease, visibility 0.5s ease;">
-  
   <div style="position: relative; width: 180px; height: 60px; display: flex; align-items: center; justify-content: flex-start; overflow: hidden; margin-bottom: 12px;">
     <div id="eggIcon" style="font-size: 36px; animation: rollEgg 1.5s linear infinite; display: inline-block;">🥚</div>
   </div>
-
   <h3 style="margin: 0 0 6px 0; color: #1f2937; font-size: 18px; font-weight: 700; letter-spacing: 0.5px;">FITKALORIKU</h3>
   <p style="margin: 0 0 20px 0; color: #10b981; font-size: 13px; font-weight: 600;">Memuat data kalori...</p>
-
   <div style="width: 200px; height: 6px; background: #e5e7eb; border-radius: 10px; overflow: hidden; position: relative;">
     <div id="loadingProgress" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 10px; transition: width 0.3s ease;"></div>
   </div>
@@ -613,13 +610,6 @@
   
   <!-- PAGE 1: BERANDA -->
   <div id="pageHome" class="page-section active">
-
-    <!-- TOMBOL PENGINGAT JAM MAKAN -->
-    <div style="margin-bottom: 12px; text-align: center;">
-      <button type="button" id="btnNotification" onclick="requestNotificationPermission()" style="background: #ffffff; border: 1.5px solid #10b981; color: #10b981; font-family: inherit; font-size: 11px; font-weight: 700; padding: 6px 14px; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
-        🔔 Aktifkan Pengingat Jam Makan
-      </button>
-    </div>
 
     <!-- BAR PROGRES HARIAN -->
     <div class="daily-bar-container">
@@ -1489,73 +1479,15 @@
   checkAndResetDaily();
 </script>
 
-<!-- LOGIKA NOTIFIKASI PENGINGAT JAM MAKAN OTOMATIS -->
+<!-- SCRIPT UNTUK MEMATIKAN & MENGHAPUS SERVICE WORKER LAMA DARI BROWSER HP -->
 <script>
-  const MEAL_SCHEDULES = [
-    { name: "Sarapan", hour: 7, minute: 0, text: "Waktunya sarapan! Jangan lupa catat kalorimu di KALORI.KU ya 🍳" },
-    { name: "Makan Siang", hour: 12, minute: 0, text: "Sudah jam makan siang nih! Yuk masukin menu makan siangmu 🥗" },
-    { name: "Makan Malam", hour: 19, minute: 0, text: "Waktunya makan malam. Tetap kontrol porsi sesuai targetmu ya! 🍲" }
-  ];
-
-  function requestNotificationPermission() {
-    if (!('Notification' in window)) {
-      showToast('Browser kamu tidak mendukung fitur notifikasi.');
-      return;
-    }
-
-    Notification.requestPermission().then(permission => {
-      if (permission === 'granted') {
-        updateNotificationButton();
-        showToast('✓ Pengingat jam makan berhasil diaktifkan!');
-        checkMealNotifications();
-      } else {
-        showToast('Izin notifikasi ditolak oleh sistem HP.');
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for(let registration of registrations) {
+        registration.unregister(); // Hapus paksa memori pwa/apk lama dari browser HP
       }
     });
   }
-
-  function updateNotificationButton() {
-    const btn = document.getElementById('btnNotification');
-    if (btn) {
-      btn.style.background = '#10b981';
-      btn.style.color = '#ffffff';
-      btn.innerText = '🔔 Pengingat Makan Aktif';
-    }
-  }
-
-  function sendMealNotification(title, body) {
-    if (Notification.permission === 'granted') {
-      new Notification(title, { body: body, icon: '/logo.png' });
-    }
-  }
-
-  function checkMealNotifications() {
-    if (Notification.permission !== 'granted') return;
-
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    const todayStr = now.toDateString();
-
-    MEAL_SCHEDULES.forEach(schedule => {
-      const notifKey = `notif_sent_${schedule.name}_${todayStr}`;
-      
-      if (currentHour === schedule.hour && currentMinute === schedule.minute) {
-        if (!localStorage.getItem(notifKey)) {
-          sendMealNotification(`Pengingat ${schedule.name}`, schedule.text);
-          localStorage.setItem(notifKey, 'true');
-        }
-      }
-    });
-  }
-
-  setInterval(checkMealNotifications, 30000);
-
-  window.addEventListener('load', () => {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      updateNotificationButton();
-    }
-  });
 </script>
 
 </body>
